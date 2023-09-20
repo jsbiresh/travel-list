@@ -19,7 +19,7 @@ export default function App() {
       <Logo />
       <Form onAddItems={handleAddItems} />
       <PackingList items={items} />
-      <Stats />
+      <Stats itemCount={items.length} />
     </div>
   )
 }
@@ -93,15 +93,17 @@ function Item({ item }) {
       <span style={item.packed ? { textDecoration: 'line-through' } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌ </button>
+      <button> ❌ </button>
     </li>
   )
 }
 
-function Stats() {
+function Stats({ itemCount }) {
   return (
     <footer className="stats">
-      <em> You have X items on your list, and you already packed X (X%)</em>
+      <em>
+        You have {itemCount} items on your list, and you already packed X (X%)
+      </em>
     </footer>
   )
 }

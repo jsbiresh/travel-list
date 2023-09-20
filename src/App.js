@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const initialItems = [
   { id: 1, description: 'Passports', quantity: 2, packed: false },
-  { id: 2, description: 'Socks', quantity: 12, packed: true },
+  { id: 2, description: 'Socks', quantity: 12, packed: false },
   { id: 3, description: 'Charger', quantity: 12, packed: false },
 ]
 
@@ -14,6 +14,11 @@ export default function App() {
   function handleAddItems(item) {
     setItems((items) => [...items, item])
   }
+
+  // const packedItemsCount = items.reduce(
+  //   (acc, current) => acc + (current.packed ? 1 : 0),
+  //   0
+  // )
 
   function handleDeleteItem(id) {
     // first it recieves the current items array, from that we filter
@@ -38,7 +43,7 @@ export default function App() {
         onToggleItem={handleToggleItem}
         onDeleteItem={handleDeleteItem}
       />
-      <Stats itemCount={items.length} />
+      <Stats items={items} />
     </div>
   )
 }
@@ -135,12 +140,29 @@ function Item({ item, handleDeleteItem, onToggleItem }) {
 }
 
 // COMPONENT Stats
-function Stats({ itemCount, packedItemCount }) {
+function Stats({ items }) {
+  // return if the items list is empty
+  if (!items.length)
+    return (
+      <p className="stats">
+        <em>Start adding some items to your packing list 🚀</em>
+      </p>
+    )
+
+  // if items list is not empty start calculating
+  const numItems = items.length
+  const numPacked = items.filter((item) => item.packed).length
+  const percentage = Math.round((numPacked / numItems) * 100)
   return (
     <footer className="stats">
-      <em>
-        You have {itemCount} items on your list, and you already packed X (X%)
-      </em>
+      {percentage !== 100 ? (
+        <em>
+          You have {numItems} items on your list, and you already packed{' '}
+          {numPacked} ( {percentage} %)
+        </em>
+      ) : (
+        <em>Complete Packing Done. Let's Go...✈</em>
+      )}
     </footer>
   )
 }

@@ -1,14 +1,15 @@
 import { useState } from 'react'
 
-// const initialItems = [
-//   { id: 1, description: 'Passports', quantity: 2, packed: false },
-//   { id: 2, description: 'Socks', quantity: 12, packed: true },
-//   { id: 3, description: 'Charger', quantity: 12, packed: false },
-// ]
+const initialItems = [
+  { id: 1, description: 'Passports', quantity: 2, packed: false },
+  { id: 2, description: 'Socks', quantity: 12, packed: true },
+  { id: 3, description: 'Charger', quantity: 12, packed: false },
+]
 
 // *******************************
+// COMPONENT App
 export default function App() {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState([...initialItems])
 
   function handleAddItems(item) {
     setItems((items) => [...items, item])
@@ -20,18 +21,34 @@ export default function App() {
     setItems((items) => items.filter((item) => id !== item.id))
   }
 
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    )
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList items={items} onDeleteItem={handleDeleteItem} />
+      <PackingList
+        items={items}
+        onToggleItem={handleToggleItem}
+        onDeleteItem={handleDeleteItem}
+      />
       <Stats itemCount={items.length} />
     </div>
   )
 }
+
+// COMPONENT Logo
 function Logo() {
   return <h1>🌴 Far Away 👜 </h1>
 }
+
+// COMPONENT Form
 function Form({ onAddItems }) {
   const [description, setDescription] = useState('')
   const [quantity, setQuantity] = useState(1)
@@ -81,21 +98,34 @@ function Form({ onAddItems }) {
     </form>
   )
 }
-function PackingList({ items, onDeleteItem }) {
+
+// COMPONENT PackingList
+function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} handleDeleteItem={onDeleteItem} />
+          <Item
+            item={item}
+            key={item.id}
+            onToggleItem={onToggleItem}
+            handleDeleteItem={onDeleteItem}
+          />
         ))}
       </ul>
     </div>
   )
 }
 
-function Item({ item, handleDeleteItem }) {
+// COMPONENT Item
+function Item({ item, handleDeleteItem, onToggleItem }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        onChange={() => onToggleItem(item.id)}
+        value={item.packed}
+      />
       <span style={item.packed ? { textDecoration: 'line-through' } : {}}>
         {item.quantity} {item.description}
       </span>
@@ -104,7 +134,8 @@ function Item({ item, handleDeleteItem }) {
   )
 }
 
-function Stats({ itemCount }) {
+// COMPONENT Stats
+function Stats({ itemCount, packedItemCount }) {
   return (
     <footer className="stats">
       <em>
